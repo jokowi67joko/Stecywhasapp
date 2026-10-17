@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>StecyHat — Real-Time Web Chat</title>
+  <!-- Remix Icon CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ================= AUTH SCREEN (LOGIN / REGISTER) ================= -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="brand-header">
+        <div class="brand-logo">
+          <i class="ri-chat-smile-3-fill"></i>
+        </div>
+        <h1>Stecy<span>Hat</span></h1>
+        <p>Ngobrol real-time, cepat, dan aman.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active">
+          <i class="ri-login-box-line"></i> Masuk
+        </button>
+        <button id="tab-register" class="auth-tab">
+          <i class="ri-user-add-line"></i> Daftar Baru
+        </button>
+      </div>
+
+      <!-- Alert Error/Info -->
+      <div id="auth-error" class="auth-alert hidden"></div>
+
+      <!-- Form Login -->
+      <form id="login-form" class="auth-form">
+        <div class="input-group">
+          <label>Email</label>
+          <div class="input-field">
+            <i class="ri-mail-line"></i>
+            <input type="email" id="login-email" placeholder="nama@email.com" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-field">
+            <i class="ri-lock-2-line"></i>
+            <input type="password" id="login-password" placeholder="Masukkan password" required />
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" id="btn-login-submit">
+          <span>Masuk ke StecyHat</span>
+          <i class="ri-arrow-right-line"></i>
+        </button>
+      </form>
+
+      <!-- Form Register -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="input-group">
+          <label>Nama Lengkap / Tampilan</label>
+          <div class="input-field">
+            <i class="ri-user-smile-line"></i>
+            <input type="text" id="reg-name" placeholder="Contoh: Stecy Creator" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Username / ID Unik</label>
+          <div class="input-field">
+            <i class="ri-at-line"></i>
+            <input type="text" id="reg-username" placeholder="contoh: stecymc" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Email</label>
+          <div class="input-field">
+            <i class="ri-mail-line"></i>
+            <input type="email" id="reg-email" placeholder="nama@email.com" required />
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-field">
+            <i class="ri-lock-2-line"></i>
+            <input type="password" id="reg-password" placeholder="Minimal 6 karakter" minlength="6" required />
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" id="btn-reg-submit">
+          <span>Buat Akun Sekarang</span>
+          <i class="ri-user-add-line"></i>
+        </button>
+      </form>
+
+      <div class="divider"><span>atau lanjutkan dengan</span></div>
+
+      <button id="btn-google-login" class="btn-google">
+        <i class="ri-google-fill"></i>
+        <span>Login dengan Google</span>
+      </button>
+
+      <div class="auth-footer">
+        <i class="ri-code-s-slash-line"></i> <span>web Developer : HAMDI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN APP SCREEN ================= -->
+  <div id="app-screen" class="app-layout hidden">
+
+    <!-- LEFT SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <!-- Sidebar Header -->
+      <header class="sidebar-header">
+        <div class="user-profile-trigger" id="btn-open-profile" title="Edit Profil Saya">
+          <img id="my-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Stecy" alt="Avatar" class="avatar" />
+          <div class="my-header-info">
+            <span id="my-display-name" class="my-name">Memuat...</span>
+            <span class="my-status-dot">
+              <i class="ri-checkbox-blank-circle-fill"></i> Online
+            </span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-theme-toggle" class="icon-btn" title="Ganti Tema (Gelap/Terang)">
+            <i class="ri-sun-line"></i>
+          </button>
+          <button id="btn-open-admin" class="icon-btn" title="Panel Admin Verified">
+            <i class="ri-shield-check-line"></i>
+          </button>
+          <button id="btn-logout" class="icon-btn danger" title="Keluar / Logout">
+            <i class="ri-logout-box-r-line"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Search Box -->
+      <div class="search-bar-container">
+        <div class="search-box">
+          <i class="ri-search-2-line"></i>
+          <input type="text" id="search-contacts" placeholder="Cari nama atau @username..." />
+        </div>
+      </div>
+
+      <!-- Contact / Chat List -->
+      <div id="contact-list" class="contact-list">
+        <div class="empty-list">
+          <i class="ri-loader-4-line"></i> Memuat daftar kontak...
+        </div>
+      </div>
+
+      <!-- Sidebar Footer Credit -->
+      <div class="sidebar-footer">
+        <i class="ri-code-s-slash-line"></i>
+        <span>StecyHat v1.0 — web Developer : HAMDI</span>
+      </div>
+    </aside>
+
+    <!-- RIGHT CHAT WINDOW -->
+    <main id="chat-area" class="chat-area">
+      <!-- Empty Welcome State -->
+      <div id="chat-welcome" class="chat-welcome">
+        <div class="welcome-icon">
+          <i class="ri-chat-smile-3-fill"></i>
+        </div>
+        <h2>Selamat Datang di Stecy<span>Hat</span></h2>
+        <p>Pilih kontak di sebelah kiri untuk mulai mengirim pesan teks dan gambar secara real-time.</p>
+        <div class="encryption-badge">
+          <i class="ri-shield-keyhole-line"></i>
+          <span>Real-time Firestore Sync — web Developer : HAMDI</span>
+        </div>
+      </div>
+
+      <!-- Active Chat Container -->
+      <div id="active-chat" class="active-chat hidden">
+        <!-- Chat Header -->
+        <header class="chat-header">
+          <button id="btn-back-mobile" class="icon-btn mobile-only" title="Kembali">
+            <i class="ri-arrow-left-line"></i>
+          </button>
+          <div class="chat-contact-info" id="btn-view-contact-profile" title="Lihat Profil Kontak">
+            <img id="active-contact-avatar" src="" alt="Avatar" class="avatar" />
+            <div class="contact-meta">
+              <div class="contact-name-row">
+                <h3 id="active-contact-name">Nama Kontak</h3>
+                <span id="active-contact-verified" class="verified-badge hidden" title="Verified User">
+                  <i class="ri-verified-badge-fill"></i>
+                </span>
+              </div>
+              <p id="active-contact-status" class="contact-status">Offline</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button id="btn-info-contact" class="icon-btn" title="Info Kontak">
+              <i class="ri-information-line"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Messages Scroll Area -->
+        <div id="messages-container" class="messages-container">
+          <!-- Pesan di-render secara dinamis di sini -->
+        </div>
+
+        <!-- Image Upload Preview Bar -->
+        <div id="image-preview-bar" class="image-preview-bar hidden">
+          <div class="preview-content">
+            <img id="image-preview-el" src="" alt="Preview" />
+            <span id="image-preview-name">gambar.jpg</span>
+          </div>
+          <button id="btn-cancel-image" class="icon-btn danger" title="Batal">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <footer class="chat-input-area">
+          <input type="file" id="chat-image-input" accept="image/*" class="hidden" />
+          <button type="button" id="btn-attach-image" class="icon-btn" title="Kirim Gambar (Upload)">
+            <i class="ri-image-add-line"></i>
+          </button>
+          <button type="button" id="btn-attach-url" class="icon-btn" title="Kirim Gambar lewat URL">
+            <i class="ri-link"></i>
+          </button>
+          <form id="message-form" class="message-form">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Ketik pesan..."
+              autocomplete="off"
+            />
+            <button type="submit" id="btn-send-message" class="btn-send" title="Kirim">
+              <i class="ri-send-plane-2-fill"></i>
+            </button>
+          </form>
+        </footer>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ================= MODAL: EDIT PROFIL SAYA ================= -->
+  <div id="profile-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="ri-user-settings-line"></i> Edit Profil Saya</h3>
+        <button id="btn-close-profile" class="icon-btn"><i class="ri-close-line"></i></button>
+      </div>
+      <form id="profile-form" class="modal-body">
+        <div class="profile-avatar-editor">
+          <img id="edit-avatar-preview" src="" alt="Preview Avatar" class="avatar-xl" />
+          
+          <!-- Drag & Drop Zone -->
+          <div id="avatar-dropzone" class="dropzone">
+            <i class="ri-upload-cloud-2-line"></i>
+            <p>Drag & drop foto ke sini atau <span>klik untuk pilih file</span></p>
+            <input type="file" id="avatar-file-input" accept="image/*" class="hidden" />
+          </div>
+
+          <div class="input-group" style="width:100%; margin-top: 8px;">
+            <label>Atau Masukkan URL Gambar Langsung</label>
+            <div class="input-field">
+              <i class="ri-image-link-line"></i>
+              <input type="url" id="edit-avatar-url" placeholder="https://contoh.com/foto.jpg" />
+            </div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Nama Tampilan</label>
+          <div class="input-field">
+            <i class="ri-user-line"></i>
+            <input type="text" id="edit-name" required />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Username</label>
+          <div class="input-field">
+            <i class="ri-at-line"></i>
+            <input type="text" id="edit-username" required />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Status / Bio</label>
+          <div class="input-field">
+            <i class="ri-chat-quote-line"></i>
+            <input type="text" id="edit-bio" placeholder="Sibuk ngoding..." />
+          </div>
+        </div>
+
+        <button type="submit" id="btn-save-profile" class="btn-primary">
+          <i class="ri-save-line"></i>
+          <span>Simpan Perubahan</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: LIHAT PROFIL USER LAIN ================= -->
+  <div id="contact-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="ri-contacts-line"></i> Info Kontak</h3>
+        <button id="btn-close-contact-modal" class="icon-btn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body center-content">
+        <img id="view-contact-avatar" src="" alt="Foto Profil" class="avatar-xl" />
+        <div class="contact-name-row" style="justify-content:center; margin-top:12px;">
+          <h2 id="view-contact-name">Nama User</h2>
+          <span id="view-contact-verified" class="verified-badge hidden">
+            <i class="ri-verified-badge-fill"></i>
+          </span>
+        </div>
+        <p id="view-contact-username" class="text-muted">@username</p>
+        <div class="bio-box">
+          <span class="bio-label"><i class="ri-Information-line"></i> Tentang / Bio</span>
+          <p id="view-contact-bio">Ada di StecyHat</p>
+        </div>
+        <p id="view-contact-lastseen" class="text-muted small-text status-with-icon"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADMIN PANEL (VERIFIED BADGE TOGGLE) ================= -->
+  <div id="admin-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="ri-shield-check-fill" style="color:var(--verified);"></i> Panel Admin — Kelola Centang Biru</h3>
+        <button id="btn-close-admin" class="icon-btn"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small-text" style="margin-bottom: 12px;">
+          Klik tombol di samping nama user untuk mengaktifkan atau menonaktifkan badge <strong>Verified (Centang Biru)</strong> secara real-time.
+        </p>
+        <div id="admin-user-list" class="admin-user-list">
+          <!-- Daftar user di-render di sini -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Script (ES Module) -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
